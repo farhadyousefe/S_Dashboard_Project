@@ -1,0 +1,25 @@
+# Node.js / React
+node_modules/
+.next/
+.env
+.env.local
+
+# Python / FastAPI
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.venv/
+env/
+venv/
+
+# Database
+*.db
+*.sqlite3
+
+# Logs
+*.log
+
+# OS / Editor files
+.DS_Store
+Thumbs.db
