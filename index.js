@@ -34,7 +34,7 @@ const background = async () => {
     console.log(data);
     console.log(data.urls.full);
     document.body.style.backgroundImage = `url(${data.urls.regular})`;
-    document.getElementById("author").textContent = `author: ${data.user.name}`;
+    document.getElementById("author").textContent = `By: ${data.user.name}`;
     return data;
   } catch (err) {
     console.log("Faild to fetch background image", err);
