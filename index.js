@@ -107,9 +107,12 @@ const weatherScrimba = async (lat, lon) => {
     const roundTemp = Math.round(temp);
     console.log(iconURL);
     document.getElementById("weather").innerHTML = `
+    <div class="temp">
     <img src=${iconURL} />
     <data value="${roundTemp}">${roundTemp}°C</data>
-    <p>${data.name}</p>
+    </div>
+    <p class="weather-city" >${data.name}</p>
+    
 
     `;
   } catch (err) {
