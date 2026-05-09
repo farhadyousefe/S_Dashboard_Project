@@ -42,4 +42,8 @@ main h1.time {
   display: flex;
   gap: 10px;
   align-items: center;
+  margin-bottom: 5px;
+}
+.top .crypto > p {
+  margin: 0;
 }

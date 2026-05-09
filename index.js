@@ -62,6 +62,12 @@ const renderCurrencyData = async () => {
           <img src=${data.image.small} />
           <span>${data.name}</span>
           `;
+    const dogecoinValue = `
+    <p>🎯: $ ${data.market_data.current_price.usd}</p>
+    <p>☝️: $ ${data.market_data.high_24h.usd}</p>
+    <p>👇: $ ${data.market_data.low_24h.usd}</p>
+    `;
+    document.getElementById("crypto").innerHTML += dogecoinValue;
   } catch (err) {
     console.log("Faild to fetch background image", err);
   }
