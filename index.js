@@ -102,6 +102,16 @@ const weatherScrimba = async (lat, lon) => {
 
     const data = await res.json();
     console.log(data);
+    const iconURL = `http://openweathermap.org/img/wn/${data.weather[0].icon}@2x.png`;
+    const temp = data.main.temp;
+    const roundTemp = Math.round(temp);
+    console.log(iconURL);
+    document.getElementById("weather").innerHTML = `
+    <img src=${iconURL} />
+    <data value="${roundTemp}">${roundTemp}°C</data>
+    <p>${data.name}</p>
+
+    `;
   } catch (err) {
     console.error(err);
   }
