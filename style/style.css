@@ -47,3 +47,29 @@ main h1.time {
 .top .crypto > p {
   margin: 0;
 }
+
+main .weather {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: flex-end;
+  font-size: 2rem;
+  font-weight: 400;
+}
+
+.weather-city {
+  margin: 0;
+  justify-self: center;
+  align-self: center;
+}
+
+.weather .temp {
+  display: flex;
+  text-align: center;
+  align-items: center;
+}
+
+.temp img {
+  width: 60px;
+  height: 60px;
+}
