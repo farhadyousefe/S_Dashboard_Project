@@ -75,3 +75,63 @@ const renderCurrencyData = async () => {
 
 renderBackgroundImg();
 renderCurrencyData();
+
+function doTime() {
+  const date = new Date();
+  let time = date.toLocaleTimeString("en-US", { timeStyle: "short" });
+  document.getElementById("time").textContent = `${time}`;
+  console.log(time);
+}
+
+setInterval(doTime, 1000);
+
+// let time = date.toLocaleString([], {
+//   hour: "2-digit",
+//   minute: "2-digit",
+//   hour12: true,
+// });
+
+const weatherScrimba = async (lat, lon) => {
+  try {
+    const res = await fetch(
+      `https://apis.scrimba.com/openweathermap/data/2.5/weather?lat=${lat}&lon=${lon}&units=metric`,
+    );
+    if (!res.ok) {
+      throw new Error("Weather data is not available");
+    }
+
+    const data = await res.json();
+    console.log(data);
+  } catch (err) {
+    console.error(err);
+  }
+};
+
+navigator.geolocation.getCurrentPosition(
+  (position) => {
+    let lat = position.coords.latitude;
+    let lon = position.coords.longitude;
+
+    weatherScrimba(lat, lon);
+  },
+  (error) => {
+    switch (error.code) {
+      case error.PERMISSION_DENIED:
+        console.error("User denied geolocation request.");
+        break;
+      case error.POSITION_UNAVAILABLE:
+        console.error("Location unavailable.");
+        break;
+      case error.TIMEOUT:
+        console.error("Request timed out.");
+        break;
+      default:
+        console.error("Unknown error.");
+    }
+  },
+  {
+    enableHighAccuracy: true,
+    timeout: 5000,
+    maximumAge: 0,
+  },
+);
