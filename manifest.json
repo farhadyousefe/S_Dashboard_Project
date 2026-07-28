@@ -27,5 +27,5 @@
     "https://images.unsplash.com/*",
     "https://openweathermap.org/*"
   ],
-  "permissions": ["storage", "geolocation"]
+  "permissions": ["storage", "geolocation", "alarms"]
 }
