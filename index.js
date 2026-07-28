@@ -1,124 +1,255 @@
-try {
-  const res = await fetch(
-    "https://apis.scrimba.com/unsplash/photos/random?orientation=landscape&query=nature",
-    {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    },
-  );
-  if (!res.ok) {
-    throw new Error(`HTTP Error! status:${res.status}`);
+// ============================================
+// CONFIGURATION (with settings)
+// ============================================
+
+let CONFIG = {
+  TIMEZONE: 'en-US',
+  TIME_STYLE: 'short',
+  DEFAULT_BACKGROUND:
+    'https://images.unsplash.com/photo-1501785888041-af3ef2c85b70?crop=entropy&cs=srgb&fm=jpg&ixid=M3wxNDI0NzB8MHwxfHJhbmRvbXx8fHx8fHx8fDE3NzgzMjA3ODN8&ixlib=rb-4.1.0&q=85',
+  cryptoCurrency: 'dogecoin',
+  weatherUnits: 'metric',
+  backgroundCategory: 'nature',
+  showCrypto: true,
+  showWeather: true,
+};
+
+// ============================================
+// LOAD SETTINGS
+// ============================================
+
+async function loadSettings() {
+  try {
+    const settings = await chrome.storage.sync.get([
+      'cryptoCurrency',
+      'temperatureUnit',
+      'backgroundCategory',
+      'showCrypto',
+      'showWeather',
+    ]);
+
+    if (settings.cryptoCurrency)
+      CONFIG.cryptoCurrency = settings.cryptoCurrency;
+    if (settings.temperatureUnit)
+      CONFIG.weatherUnits = settings.temperatureUnit;
+    if (settings.backgroundCategory)
+      CONFIG.backgroundCategory = settings.backgroundCategory;
+    if (settings.showCrypto !== undefined)
+      CONFIG.showCrypto = settings.showCrypto;
+    if (settings.showWeather !== undefined)
+      CONFIG.showWeather = settings.showWeather;
+  } catch (err) {
+    console.warn('Using default settings:', err);
   }
-  const data = await res.json();
-  console.log(data);
-  console.log(data.urls.full);
-  document.body.style.backgroundImage = `url(${data.urls.regular})`;
-  document.getElementById("author").textContent = `By: ${data.user.name}`;
-} catch (err) {
-  console.log("Faild to fetch background image", err);
-  const defaultUrl =
-    "https://images.unsplash.com/photo-1501785888041-af3ef2https://images.unsplash.com/photo-1470813740244-df37b8c1edcb?crop=entropy&cs=srgb&fm=jpg&ixid=M3wxNDI0NzB8MHwxfHJhbmRvbXx8fHx8fHx8fDE3NzgzMjA3ODN8&ixlib=rb-4.1.0&q=8585b470?crop=entropy&cs=srgb&fm=jpg&ixid=M3wxNDI0NzB8MHwxfHJhbmRvbXx8fHx8fHx8fDE3NzgyNDUzMDV8&ixlib=rb-4.1.0&q=85";
-  document.body.style.backgroundImage = `url(${defaultUrl})`;
-  // Report the error to some kind of service for diagnosis
 }
 
-try {
-  const res = await fetch("https://api.coingecko.com/api/v3/coins/dogecoin", {
-    method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-    },
-  });
-  if (!res.ok) {
-    throw new Error(`HTTP Error! status:${res.status}`);
+// ============================================
+// HELPER FUNCTIONS
+// ============================================
+
+// Show loading state
+function showLoading(elementId) {
+  const el = document.getElementById(elementId);
+  if (el) {
+    el.innerHTML = '<span class="loading">Loading...</span>';
   }
-  const data = await res.json();
-  console.log(data);
-  document.getElementById("crypto-top").innerHTML = `
-          <img src=${data.image.small} />
-          <span>${data.name}</span>
-          `;
-  const dogecoinValue = `
-    <p>🎯: $ ${data.market_data.current_price.usd}</p>
-    <p>☝️: $ ${data.market_data.high_24h.usd}</p>
-    <p>👇: $ ${data.market_data.low_24h.usd}</p>
-    `;
-  document.getElementById("crypto").innerHTML += dogecoinValue;
-} catch (err) {
-  console.log("Faild to fetch background image", err);
 }
 
-function doTime() {
-  const date = new Date();
-  let time = date.toLocaleTimeString("en-US", { timeStyle: "short" });
-  document.getElementById("time").textContent = `${time}`;
-  console.log(time);
+// Hide loading state
+function hideLoading(elementId) {
+  const el = document.getElementById(elementId);
+  if (el) {
+    el.classList.remove('loading');
+  }
 }
 
-setInterval(doTime, 1000);
+// ============================================
+// 1. BACKGROUND IMAGE
+// ============================================
 
-// let time = date.toLocaleString([], {
-//   hour: "2-digit",
-//   minute: "2-digit",
-//   hour12: true,
-// });
-
-const weatherScrimba = async (lat, lon) => {
+async function fetchBackground() {
   try {
     const res = await fetch(
-      `https://apis.scrimba.com/openweathermap/data/2.5/weather?lat=${lat}&lon=${lon}&units=metric`,
+      `https://apis.scrimba.com/unsplash/photos/random?orientation=landscape&query=${CONFIG.backgroundCategory}`
     );
+
     if (!res.ok) {
-      throw new Error("Weather data is not available");
+      throw new Error(`HTTP Error! status: ${res.status}`);
     }
 
     const data = await res.json();
-    console.log(data);
-    const iconURL = `http://openweathermap.org/img/wn/${data.weather[0].icon}@2x.png`;
-    const temp = data.main.temp;
-    const roundTemp = Math.round(temp);
-    console.log(iconURL);
-    document.getElementById("weather").innerHTML = `
-    <div class="temp">
-    <img src=${iconURL} />
-    <data value="${roundTemp}">${roundTemp}°C</data>
-    </div>
-    <p class="weather-city" >${data.name}</p>
-    
+    document.body.style.backgroundImage = `url(${data.urls.regular})`;
+    document.getElementById('author').textContent = `📸 By: ${data.user.name}`;
+  } catch (err) {
+    console.error('Failed to fetch background image:', err);
+    document.body.style.backgroundImage = `url(${CONFIG.DEFAULT_BACKGROUND})`;
+    document.getElementById('author').textContent = '📸 Photo by Unsplash';
+  }
+}
 
+// ============================================
+// 2. CLOCK
+// ============================================
+
+function updateClock() {
+  const date = new Date();
+  const time = date.toLocaleTimeString(CONFIG.TIMEZONE, {
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+  });
+  document.getElementById('time').textContent = time;
+}
+
+// ============================================
+// 3. CRYPTO PRICE
+// ============================================
+
+async function fetchCrypto() {
+  try {
+    showLoading('crypto');
+
+    const res = await fetch(
+      `https://api.coingecko.com/api/v3/coins/${CONFIG.CRYPTO_CURRENCY}`
+    );
+
+    if (!res.ok) {
+      throw new Error(`HTTP Error! status: ${res.status}`);
+    }
+
+    const data = await res.json();
+
+    // Update the crypto display
+    const cryptoContainer = document.getElementById('crypto');
+    cryptoContainer.innerHTML = `
+      <div class="crypto-top">
+        <img src="${data.image.small}" alt="${data.name}" />
+        <span>${data.name}</span>
+        <span class="crypto-symbol">${data.symbol.toUpperCase()}</span>
+      </div>
+      <div class="crypto-details">
+        <p>💰 Price: $${data.market_data.current_price.usd.toFixed(4)}</p>
+        <p>📈 High (24h): $${data.market_data.high_24h.usd.toFixed(4)}</p>
+        <p>📉 Low (24h): $${data.market_data.low_24h.usd.toFixed(4)}</p>
+      </div>
     `;
   } catch (err) {
-    console.error(err);
+    console.error('Failed to fetch crypto:', err);
+    document.getElementById('crypto').innerHTML = `
+      <p>⚠️ Crypto data unavailable</p>
+    `;
   }
-};
+}
 
-navigator.geolocation.getCurrentPosition(
-  (position) => {
-    let lat = position.coords.latitude;
-    let lon = position.coords.longitude;
+// ============================================
+// 4. WEATHER
+// ============================================
 
-    weatherScrimba(lat, lon);
-  },
-  (error) => {
-    switch (error.code) {
-      case error.PERMISSION_DENIED:
-        console.error("User denied geolocation request.");
-        break;
-      case error.POSITION_UNAVAILABLE:
-        console.error("Location unavailable.");
-        break;
-      case error.TIMEOUT:
-        console.error("Request timed out.");
-        break;
-      default:
-        console.error("Unknown error.");
+async function fetchWeather(lat, lon) {
+  if (!CONFIG.showWeather) {
+    document.getElementById('weather').style.display = 'none';
+    return;
+  }
+
+  document.getElementById('weather').style.display = 'block';
+
+  try {
+    showLoading('weather');
+
+    const res = await fetch(
+      `https://apis.scrimba.com/openweathermap/data/2.5/weather?lat=${lat}&lon=${lon}&units=${CONFIG.weatherUnits}`
+    );
+
+    if (!res.ok) {
+      throw new Error('Weather data is not available');
     }
-  },
-  {
-    enableHighAccuracy: true,
-    timeout: 5000,
-    maximumAge: 0,
-  },
-);
+
+    const data = await res.json();
+
+    const iconURL = `https://openweathermap.org/img/wn/${data.weather[0].icon}@2x.png`;
+    const temp = Math.round(data.main.temp);
+    const tempUnit = CONFIG.weatherUnits === 'metric' ? '°C' : '°F';
+
+    document.getElementById('weather').innerHTML = `
+      <div class="temp">
+        <img src="${iconURL}" alt="${data.weather[0].description}" />
+        <span>${temp}${tempUnit}</span>
+      </div>
+      <p class="weather-city">📍 ${data.name}</p>
+      <p class="weather-desc">${data.weather[0].description}</p>
+    `;
+  } catch (err) {
+    console.error('Failed to fetch weather:', err);
+    document.getElementById('weather').innerHTML = `
+      <p>⚠️ Weather data unavailable</p>
+    `;
+  }
+}
+
+// ============================================
+// 5. GET USER LOCATION
+// ============================================
+
+function getUserLocation() {
+  if ('geolocation' in navigator) {
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        const lat = position.coords.latitude;
+        const lon = position.coords.longitude;
+        fetchWeather(lat, lon);
+      },
+      (error) => {
+        console.error('Geolocation error:', error.message);
+        // Use a default city (London) if location is denied
+        fetchWeather(51.5074, -0.1278);
+      },
+      {
+        enableHighAccuracy: true,
+        timeout: 5000,
+        maximumAge: 0,
+      }
+    );
+  } else {
+    console.warn('Geolocation not supported');
+    fetchWeather(51.5074, -0.1278); // Default to London
+  }
+}
+
+// ============================================
+// 6. INITIALIZE EVERYTHING
+// ============================================
+
+async function init() {
+  // Load settings first
+  await loadSettings();
+
+  // Show loading states
+  showLoading('crypto');
+  showLoading('weather');
+
+  // Fetch all data
+  await fetchBackground();
+  await fetchCrypto();
+  getUserLocation();
+
+  // Start the clock
+  updateClock();
+  setInterval(updateClock, 1000);
+
+  // Refresh crypto every 5 minutes
+  setInterval(fetchCrypto, 300000);
+}
+
+// showing version
+function showVersion() {
+  const manifest = chrome.runtime.getManifest();
+  document.getElementById('version').textContent = `v${manifest.version}`;
+}
+
+// Call in init function
+showVersion();
+
+// Start the app
+init();
+
+console.log('🚀 Personal Dashboard loaded!');

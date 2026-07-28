@@ -1,12 +1,31 @@
 {
   "manifest_version": 3,
   "name": "Personal Dashboard",
-  "version": "1.0.0",
-  "description": "Just for practicing async JS",
+  "version": "2.0.0",
+  "description": "Your personalized new tab dashboard with settings, caching, and more!",
   "action": {
     "default_icon": "icon.png"
   },
   "chrome_url_overrides": {
     "newtab": "index.html"
-  }
+  },
+  "options_page": "options.html",
+  "background": {
+    "service_worker": "background.js"
+  },
+  "commands": {
+    "refresh-dashboard": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+R"
+      },
+      "description": "Refresh dashboard data"
+    }
+  },
+  "host_permissions": [
+    "https://apis.scrimba.com/*",
+    "https://api.coingecko.com/*",
+    "https://images.unsplash.com/*",
+    "https://openweathermap.org/*"
+  ],
+  "permissions": ["storage", "geolocation"]
 }
