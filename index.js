@@ -106,9 +106,18 @@ function updateClock() {
 // ============================================
 
 async function fetchCrypto() {
+  // ✅ FIXED: Check if crypto should be shown
+  if (!CONFIG.showCrypto) {
+    document.getElementById('crypto').style.display = 'none';
+    return;
+  }
+
+  document.getElementById('crypto').style.display = 'block';
+
   try {
     showLoading('crypto');
 
+    // ✅ FIXED: Use correct property name (cryptoCurrency, not CRYPTO_CURRENCY)
     const res = await fetch(
       `https://api.coingecko.com/api/v3/coins/${CONFIG.cryptoCurrency}`
     );
@@ -146,6 +155,7 @@ async function fetchCrypto() {
 // ============================================
 
 async function fetchWeather(lat, lon) {
+  // ✅ FIXED: Check if weather should be shown
   if (!CONFIG.showWeather) {
     document.getElementById('weather').style.display = 'none';
     return;
@@ -216,12 +226,28 @@ function getUserLocation() {
 }
 
 // ============================================
-// 6. INITIALIZE EVERYTHING
+// 6. SHOW VERSION
+// ============================================
+
+function showVersion() {
+  try {
+    const manifest = chrome.runtime.getManifest();
+    document.getElementById('version').textContent = `v${manifest.version}`;
+  } catch (err) {
+    console.warn('Could not get version:', err);
+    document.getElementById('version').textContent = 'v2.0.0';
+  }
+}
+
+// ============================================
+// 7. INITIALIZE EVERYTHING
 // ============================================
 
 async function init() {
   // Load settings first
   await loadSettings();
+
+  console.log('🚀 Dashboard loading with settings:', CONFIG);
 
   // Show loading states
   showLoading('crypto');
@@ -238,16 +264,10 @@ async function init() {
 
   // Refresh crypto every 5 minutes
   setInterval(fetchCrypto, 300000);
-}
 
-// showing version
-function showVersion() {
-  const manifest = chrome.runtime.getManifest();
-  document.getElementById('version').textContent = `v${manifest.version}`;
+  // Show version
+  showVersion();
 }
-
-// Call in init function
-showVersion();
 
 // Start the app
 init();
