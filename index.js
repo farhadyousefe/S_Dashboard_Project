@@ -7,7 +7,7 @@ let CONFIG = {
   TIME_STYLE: 'short',
   DEFAULT_BACKGROUND:
     'https://images.unsplash.com/photo-1501785888041-af3ef2c85b70?crop=entropy&cs=srgb&fm=jpg&ixid=M3wxNDI0NzB8MHwxfHJhbmRvbXx8fHx8fHx8fDE3NzgzMjA3ODN8&ixlib=rb-4.1.0&q=85',
-  cryptoCurrency: 'dogecoin',
+  cryptoCurrency: 'bitcoin',
   weatherUnits: 'metric',
   backgroundCategory: 'nature',
   showCrypto: true,
