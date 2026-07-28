@@ -110,7 +110,7 @@ async function fetchCrypto() {
     showLoading('crypto');
 
     const res = await fetch(
-      `https://api.coingecko.com/api/v3/coins/${CONFIG.CRYPTO_CURRENCY}`
+      `https://api.coingecko.com/api/v3/coins/${CONFIG.cryptoCurrency}`
     );
 
     if (!res.ok) {
